@@ -1,7 +1,7 @@
 // src/components/atoms/Input.js
 import React from 'react';
 
-const Input = ({ type, placeholder, value, onChange, className, disabled }) => {
+const InputField = ({ type, placeholder, value, onChange, className, disabled }) => {
   return (
     <input
       type={type}
@@ -10,8 +10,9 @@ const Input = ({ type, placeholder, value, onChange, className, disabled }) => {
       onChange={onChange}
       className={`border border-gray-300 p-2 rounded ${className}`}
       disabled={disabled}
+      required
     />
   );
 };
 
-export default Input;
+export default InputField;
