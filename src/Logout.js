@@ -1,10 +1,14 @@
 import React from 'react';
 import { auth } from './firebase';
+import { signOut } from 'firebase/auth';
+import { useNavigate } from 'react-router-dom';
 
 const Logout = () => {
+  const navigate = useNavigate();
   const handleLogout = async () => {
     try {
-      await auth.signOut();
+      await signOut(auth);
+      navigate('/');
       // Handle successful logout (e.g., redirect to login)
     } catch (error) {
       console.error(error.message);
@@ -12,10 +16,8 @@ const Logout = () => {
   };
 
   return (
-    <div>
-      <h2>Logout</h2>
+    
       <button onClick={handleLogout}>Logout</button>
-    </div>
   );
 };
 
