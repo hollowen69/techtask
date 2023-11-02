@@ -1,16 +1,15 @@
 // src/components/molecules/LoginForm.js
 import React,{ useEffect, useState } from 'react';
-import Button from '../../atoms/Button';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import InputField from '../../atoms/InputField';
 import { auth } from '../../../firebase';
 import Header from '../../molecules/Header';
 import { db } from '../../../firebase';
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection,  addDoc, getDocs } from "firebase/firestore";
 import Card from '../../molecules/Card';
 const Home = () => {
   const [data, setData] = useState([]);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,23 +27,42 @@ const Home = () => {
 
     fetchData(); // Call the async function to fetch data when the component mounts
   }, []);
-  /*const handleSubmit = async (e) => {
-    e.preventDefault()
-    try {
-      await addDoc(collection(db, 'tasks'), {
-        title: title,
-        description: description,
-        completed: false,
-        created: Timestamp.now()
-      })
-      onClose()
-    } catch (err) {
-      alert(err)
+  
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in
+        setUser(user);
+      } else {
+        // User is not logged in
+        
+        setUser(null);
+        
+      }
+    });
+
+    // Unsubscribe from the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
+  const handleAdd2CartClick = async (id,price,title) => {
+    if(user){
+      try {
+        const docRef = await addDoc(collection(db, 'Cart'), {
+          ProduId: id,
+          UserID: user.uid,
+          Price: price,
+          Title: title,
+          timestamp: new Date(),
+        });
+        console.log('Task added with ID: ', docRef.id);
+      } catch (error) {
+        console.error('Error adding task: ', error);
+      }
     }
-  }*/
-  const handleAdd2CartClick = (id) => {
-    console.log('Add to Cart clicked for card with ID:',id);
-    // Perform your logic with the card ID here
+    else{
+      navigate('/Login');
+    }
+ 
   };
 
   return (

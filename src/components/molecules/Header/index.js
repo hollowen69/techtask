@@ -1,8 +1,6 @@
 import React, { useEffect ,useState } from 'react';
 import { auth } from '../../../firebase';
 import { useNavigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import InputField from '../../atoms/InputField';
 import Button from '../../atoms/Button';
 import { signOut } from 'firebase/auth';
 
@@ -10,22 +8,18 @@ const Header = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const handleLoginButtonClick = () => {
-        // Navigate to a different route on button click
         navigate('/Login');
       };
       const handleSignupButtonClick = () => {
-        // Navigate to a different route on button click
         navigate('/Signup');
       };
       const handleCartButtonClick = () => {
-        // Navigate to a different route on button click
         navigate('/Cart');
       };
       const handleLogoutButton = async () => {
         try {
           await signOut(auth);
           navigate('/');
-          // Handle successful logout (e.g., redirect to Home)
         } catch (error) {
           console.error(error.message);
         }
@@ -41,8 +35,6 @@ const Header = () => {
           setUser(null);
         }
       });
-  
-      // Unsubscribe from the listener when the component unmounts
       return () => unsubscribe();
     }, []);
     return (

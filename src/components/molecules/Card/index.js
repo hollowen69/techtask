@@ -3,7 +3,7 @@ import Button from '../../atoms/Button';
 
 const Card = ({ id,imageSrc, title,price, buttonText, onButtonClick, className }) => {
   const handleButtonClick = () => {
-    onButtonClick(id); // Pass the card ID to the parent component function
+    onButtonClick(id,price,title); // Pass the card ID to the parent component function
   };
   return (
     <div id={id} className={`card ${className}`}>

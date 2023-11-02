@@ -1,14 +1,30 @@
 // src/components/molecules/LoginForm.js
 import React from 'react';
-import Button from '../../atoms/Button';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import InputField from '../../atoms/InputField';
 import { auth } from '../../../firebase';
+import { useEffect } from 'react';
 
 import Header from '../../molecules/Header';
 const Cart = () => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is logged in
+        setUser(user);
+      } else {
+        // User is not logged in
+        
+        navigate('/Login');
+        
+      }
+    });
+
+    // Unsubscribe from the listener when the component unmounts
+    return () => unsubscribe();
+  }, []);
    
   return (
     <div>
