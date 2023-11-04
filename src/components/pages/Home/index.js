@@ -1,15 +1,18 @@
-// src/components/molecules/LoginForm.js
+
 import React,{ useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../../firebase';
 import Header from '../../molecules/Header';
 import { db } from '../../../firebase';
-import { collection,  addDoc, getDocs } from "firebase/firestore";
-import Card from '../../molecules/Card';
+import { collection,   getDocs } from "firebase/firestore";
+import PaypalComponent from '../../molecules/PayPalComponent';
+
 const Home = () => {
-  const [data, setData] = useState([]);
+  const [items, setItems] = useState([]);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true); // New state for loading indicator
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -18,14 +21,15 @@ const Home = () => {
           id: doc.id,
           ...doc.data(),
         }));
-        console.log(documents);
-        setData(documents);
+        setItems(documents);
+        setIsLoading(false); // Set loading to false once data is fetched
       } catch (error) {
         console.error('Error fetching data: ', error);
+        setIsLoading(false); // Set loading to false in case of an error
       }
     };
 
-    fetchData(); // Call the async function to fetch data when the component mounts
+    fetchData();
   }, []);
   
   useEffect(() => {
@@ -44,44 +48,57 @@ const Home = () => {
     // Unsubscribe from the listener when the component unmounts
     return () => unsubscribe();
   }, []);
-  const handleAdd2CartClick = async (id,price,title) => {
-    if(user){
-      try {
-        const docRef = await addDoc(collection(db, 'Cart'), {
-          ProduId: id,
-          UserID: user.uid,
-          Price: price,
-          Title: title,
-          timestamp: new Date(),
-        });
-        console.log('Task added with ID: ', docRef.id);
-      } catch (error) {
-        console.error('Error adding task: ', error);
-      }
-    }
-    else{
-      navigate('/Login');
-    }
- 
-  };
+  
+  const handlePayButtonClick = async (price) => {
+    if (user) {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/setup/', {
+        method: 'POST',
 
-  return (
+        headers: {
+          'Content-Type': 'application/json',
 
-    <div>
-        <Header />
-       
-      <h2>store Items:</h2>
+        },
+        body: JSON.stringify(
+        
+          {
+            "price" : price
+          }),
+      });
       
-      <div >
-        {data.map((item) => (
-          <div className='border-2 table-caption'>
-            <Card key={item.id} id={item.id} buttonText="Add to Cart" price={item.Price} imageSrc={item.ImgUrl}  onButtonClick={handleAdd2CartClick} title={item.ProductName}/>
-          </div>
-          
-        ))}
+      if (response.ok) {
+        const data = await response.json();
+        window.location.replace( JSON.parse(data).initUrl );
+       navigate(JSON.parse(data).initUrl);
+      } else {
+        // Handle errors here
+        console.error('Error occurred while fetching data');
+      }
+    } catch (error) {
+      // Handle network errors here
+      console.error('Error occurred while fetching data2', error);
+    }}
+    else{
+      navigate("/login");
+    }
+  };
+  console.log("eeeeee",items);
+  return (
+    <div>
+      <Header />
+      <h2>store Items:</h2>
+      <div>
+        {isLoading ? ( // Show loading message while data is being fetched
+          <p>Loading...</p>
+        ) : (
+          items.map((item) => (
+            <div key={item.id} className=''>
+              <PaypalComponent id={item.id} buttonText="buy now" price={item.Price} onButtonClick={handlePayButtonClick} title={item.ProductName} />
+            </div>
+          ))
+        )}
       </div>
     </div>
-    
   );
 };
 

@@ -13,9 +13,6 @@ const Header = () => {
       const handleSignupButtonClick = () => {
         navigate('/Signup');
       };
-      const handleCartButtonClick = () => {
-        navigate('/Cart');
-      };
       const handleLogoutButton = async () => {
         try {
           await signOut(auth);
@@ -64,11 +61,7 @@ const Header = () => {
               />
             </div>
           )}
-          <Button
-                label="Cart"
-                className=""
-                onClick={handleCartButtonClick}
-              />
+          
         </div>
       );
 };
