@@ -1,0 +1,1 @@
+to run this project run the following command npm installed followed by npm start
